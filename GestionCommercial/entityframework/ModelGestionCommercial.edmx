@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="gestion_commercialModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="article">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="reference" Type="varchar" MaxLength="50" />
+          <Property Name="libelle" Type="varchar" MaxLength="50" />
+          <Property Name="stock" Type="varchar" MaxLength="50" />
+          <Property Name="prix" Type="int" />
+          <Property Name="categorie" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="commande">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="int" />
+          <Property Name="numero" Type="int" />
+          <Property Name="total" Type="int" />
+          <Property Name="categorie" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <!--Erreurs détectées durant la génération :
+avertissement 6002: La table/vue 'gestion_commercial.dbo.detail' n'a pas de clé primaire définie. La clé a été déduite et la définition a été créée en tant que table/vue en lecture seule.-->
+        <EntityType Name="detail">
+          <Key>
+            <PropertyRef Name="client_id" />
+            <PropertyRef Name="qtecommandee" />
+            <PropertyRef Name="commande_id" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="client_id" Type="int" Nullable="false" />
+          <Property Name="qtecommandee" Type="int" Nullable="false" />
+          <Property Name="commande_id" Type="int" Nullable="false" />
+          <Property Name="article_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="personne">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nom_complet" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="type" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="profil" Type="varchar" MaxLength="255" />
+          <Property Name="tel" Type="int" />
+          <Property Name="adresse" Type="varchar" MaxLength="255" />
+          <Property Name="login" Type="varchar" MaxLength="255" />
+          <Property Name="pwd" Type="varchar" MaxLength="255" />
+          <Property Name="commande_id" Type="int" />
+        </EntityType>
+        <Association Name="FK_detail_article">
+          <End Role="article" Type="Self.article" Multiplicity="1" />
+          <End Role="detail" Type="Self.detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="article">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="detail">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_detail_personne">
+          <End Role="personne" Type="Self.personne" Multiplicity="1" />
+          <End Role="detail" Type="Self.detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="personne">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="detail">
+              <PropertyRef Name="client_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_personne_commande">
+          <End Role="commande" Type="Self.commande" Multiplicity="0..1" />
+          <End Role="personne" Type="Self.personne" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="commande">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="personne">
+              <PropertyRef Name="commande_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="gestion_commercialModelStoreContainer">
+          <EntitySet Name="article" EntityType="Self.article" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="commande" EntityType="Self.commande" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="personne" EntityType="Self.personne" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="detail" EntityType="Self.detail" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [detail].[client_id] AS [client_id], 
+    [detail].[qtecommandee] AS [qtecommandee], 
+    [detail].[commande_id] AS [commande_id], 
+    [detail].[article_id] AS [article_id]
+    FROM [dbo].[detail] AS [detail]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_detail_article" Association="Self.FK_detail_article">
+            <End Role="article" EntitySet="article" />
+            <End Role="detail" EntitySet="detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_detail_personne" Association="Self.FK_detail_personne">
+            <End Role="personne" EntitySet="personne" />
+            <End Role="detail" EntitySet="detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_personne_commande" Association="Self.FK_personne_commande">
+            <End Role="commande" EntitySet="commande" />
+            <End Role="personne" EntitySet="personne" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="gestion_commercialModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="article">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="reference" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="libelle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="stock" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="prix" Type="Int32" />
+          <Property Name="categorie" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="detail" Relationship="Self.FK_detail_article" FromRole="article" ToRole="detail" />
+        </EntityType>
+        <EntityType Name="commande">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="Int32" />
+          <Property Name="numero" Type="Int32" />
+          <Property Name="total" Type="Int32" />
+          <Property Name="categorie" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="personne" Relationship="Self.FK_personne_commande" FromRole="commande" ToRole="personne" />
+        </EntityType>
+        <EntityType Name="personne">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nom_complet" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="type" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="profil" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="tel" Type="Int32" />
+          <Property Name="adresse" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="login" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="pwd" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="commande_id" Type="Int32" />
+          <NavigationProperty Name="commande" Relationship="Self.FK_personne_commande" FromRole="personne" ToRole="commande" />
+          <NavigationProperty Name="detail" Relationship="Self.FK_detail_personne" FromRole="personne" ToRole="detail" />
+        </EntityType>
+        <EntityType Name="detail">
+          <Key>
+            <PropertyRef Name="client_id" />
+            <PropertyRef Name="qtecommandee" />
+            <PropertyRef Name="commande_id" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="client_id" Type="Int32" Nullable="false" />
+          <Property Name="qtecommandee" Type="Int32" Nullable="false" />
+          <Property Name="commande_id" Type="Int32" Nullable="false" />
+          <Property Name="article_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="article" Relationship="Self.FK_detail_article" FromRole="detail" ToRole="article" />
+          <NavigationProperty Name="personne" Relationship="Self.FK_detail_personne" FromRole="detail" ToRole="personne" />
+        </EntityType>
+        <Association Name="FK_detail_article">
+          <End Role="article" Type="Self.article" Multiplicity="1" />
+          <End Role="detail" Type="Self.detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="article">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="detail">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_personne_commande">
+          <End Role="commande" Type="Self.commande" Multiplicity="0..1" />
+          <End Role="personne" Type="Self.personne" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="commande">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="personne">
+              <PropertyRef Name="commande_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_detail_personne">
+          <End Role="personne" Type="Self.personne" Multiplicity="1" />
+          <End Role="detail" Type="Self.detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="personne">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="detail">
+              <PropertyRef Name="client_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="gestion_commercialEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="article" EntityType="Self.article" />
+          <EntitySet Name="commande" EntityType="Self.commande" />
+          <EntitySet Name="personne" EntityType="Self.personne" />
+          <EntitySet Name="detail" EntityType="Self.detail" />
+          <AssociationSet Name="FK_detail_article" Association="Self.FK_detail_article">
+            <End Role="article" EntitySet="article" />
+            <End Role="detail" EntitySet="detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_personne_commande" Association="Self.FK_personne_commande">
+            <End Role="commande" EntitySet="commande" />
+            <End Role="personne" EntitySet="personne" />
+          </AssociationSet>
+          <AssociationSet Name="FK_detail_personne" Association="Self.FK_detail_personne">
+            <End Role="personne" EntitySet="personne" />
+            <End Role="detail" EntitySet="detail" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="gestion_commercialModelStoreContainer" CdmEntityContainer="gestion_commercialEntities">
+          <EntitySetMapping Name="article">
+            <EntityTypeMapping TypeName="gestion_commercialModel.article">
+              <MappingFragment StoreEntitySet="article">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="reference" ColumnName="reference" />
+                <ScalarProperty Name="libelle" ColumnName="libelle" />
+                <ScalarProperty Name="stock" ColumnName="stock" />
+                <ScalarProperty Name="prix" ColumnName="prix" />
+                <ScalarProperty Name="categorie" ColumnName="categorie" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="commande">
+            <EntityTypeMapping TypeName="gestion_commercialModel.commande">
+              <MappingFragment StoreEntitySet="commande">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="numero" ColumnName="numero" />
+                <ScalarProperty Name="total" ColumnName="total" />
+                <ScalarProperty Name="categorie" ColumnName="categorie" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="personne">
+            <EntityTypeMapping TypeName="gestion_commercialModel.personne">
+              <MappingFragment StoreEntitySet="personne">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="nom_complet" ColumnName="nom_complet" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="profil" ColumnName="profil" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="adresse" ColumnName="adresse" />
+                <ScalarProperty Name="login" ColumnName="login" />
+                <ScalarProperty Name="pwd" ColumnName="pwd" />
+                <ScalarProperty Name="commande_id" ColumnName="commande_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="detail">
+            <EntityTypeMapping TypeName="gestion_commercialModel.detail">
+              <MappingFragment StoreEntitySet="detail">
+                <ScalarProperty Name="client_id" ColumnName="client_id" />
+                <ScalarProperty Name="qtecommandee" ColumnName="qtecommandee" />
+                <ScalarProperty Name="commande_id" ColumnName="commande_id" />
+                <ScalarProperty Name="article_id" ColumnName="article_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Aucun" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
